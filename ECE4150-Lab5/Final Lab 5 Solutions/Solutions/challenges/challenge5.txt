@@ -1,0 +1,6 @@
+SELECT bigram, SUM(int1) AS total_int1 
+FROM hue__tmp_challenge5_table 
+WHERE size(split(trim(bigram), " ")) = 2
+GROUP BY bigram 
+ORDER BY total_int1 DESC
+LIMIT 1;

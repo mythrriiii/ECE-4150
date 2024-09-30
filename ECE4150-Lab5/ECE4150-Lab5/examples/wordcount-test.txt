@@ -1,0 +1,12 @@
+--In Local mode with input file on Hadoop instance:
+a = LOAD 'file:///mnt/c/Users/mythr/Desktop/Uni textbooks/SPRING 2024/ECE 4150 A/ECE4150-Lab5/ECE4150-Lab5/datasets/book.txt' as (lines:chararray);
+
+
+
+b = FOREACH a GENERATE FLATTEN(TOKENIZE(lines)) as word;
+c = GROUP b by word;
+d = FOREACH c GENERATE group, COUNT(b);
+
+store d into 'output.txt' USING PigStorage('\t');
+
+

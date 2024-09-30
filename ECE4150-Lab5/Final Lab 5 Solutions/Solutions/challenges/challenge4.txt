@@ -1,0 +1,22 @@
+--In Local mode with input file on Hadoop instance:
+a = LOAD 'file:///home/hadoop/googlebooks-eng-us-all-2gram-20090715-50-subset.csv' USING PigStorage('\t') as (field1:chararray, year:int, field3:int, field4:int, field5:int);
+
+--In MapReduce mode with input file on HDFS:
+a = LOAD '/user/mmuralikannan3/googlebooks-eng-us-all-2gram-20090715-50-subset.csv'  USING PigStorage('\t') as (field1:chararray, year:int, field3:int, field4:int, field5:int);
+
+
+-- Create a new field by concatenating year and field3
+a1 = FOREACH a GENERATE year, field1, field3;
+a2 = ORDER a1 BY field3 DESC;
+
+a3 = GROUP a2 BY year;
+a4 = FOREACH a3 {b = MAX(a2.field3); c = FILTER a2 BY year == $0; GENERATE FLATTEN(c), b;}
+
+a5 = FILTER a4 BY $2 == $3;
+h = FOREACH a5 GENERATE $0, $1, $2;
+
+STORE h INTO '/user/mmuralikannan3/challenge4';
+
+
+
+

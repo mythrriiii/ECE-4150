@@ -1,0 +1,22 @@
+--In Local mode with input file on Hadoop instance:
+a = LOAD 'file:///home/hadoop/googlebooks-eng-us-all-2gram-20090715-50-subset.csv' USING PigStorage('\t') as (field1:chararray, year:int, field3:int, field4:int, field5:int);
+
+--In MapReduce mode with input file on HDFS:
+a = LOAD 'hdfs:///user/mmuralikannan3/googlebooks-eng-us-all-2gram-20090715-50-subset.csv'  USING PigStorage('\t') as (field1:chararray, year:int, field3:int, field4:int, field5:int);
+
+a2 = FILTER a BY year == 2003;
+
+b = FOREACH a2 GENERATE field1 as word, field3;
+
+-- Calculate the maximum value of field3
+c = GROUP b ALL;
+max_field3 = FOREACH c GENERATE MAX(b.field3) as max_field3;
+
+-- Filter records from b based on the maximum value of field3
+d = FILTER b BY field3 == max_field3.max_field3;
+
+
+STORE d INTO 'hdfs:///user/mmuralikannan3/challenge3';
+
+
+
